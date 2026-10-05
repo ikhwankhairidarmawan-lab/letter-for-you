@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear My Ex</title>
+    <style>
+        /* Mengatur latar belakang halaman dengan Foto */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            
+            /* Ganti 'foto5.jpeg' sesuai nama file foto kamu */
+            background-image: url('foto5.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Overlay gelap & blur di belakang agar teks tetap mudah dibaca */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1;
+        }
+
+        /* --- STYLES LOADING SCREEN --- */
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2c282b;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #ff4d6d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #ffffff;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Menyembunyikan loader saat selesai */
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* --- CONTAINER UTAMA KARTU --- */
+        .card {
+            background-color: rgba(255, 255, 255, 0.92);
+            width: 90%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            box-sizing: border-box;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        /* Animasi kartu muncul setelah loading */
+        .card-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Area kotak pesan teks */
+        .message-box {
+            background-color: #f7f7f7;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            min-height: 180px;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            scroll-behavior: smooth;
+        }
+
+        /* Label "TO KAMU:" */
+        .label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #888888;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Isi surat/pesan ucapan */
+        .content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444444;
+            white-space: pre-line;
+        }
+
+        /* Teks instruksi awal */
+        .placeholder-text {
+            color: #888888;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        /* Kursor berkedip seperti saat mengetik */
+        .cursor {
+            font-weight: 100;
+            color: #444444;
+            animation: blink 0.7s infinite;
+            display: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Judul Kartu */
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 15px;
+        }
+
+        /* Tombol Kejutan */
+        .btn-hug {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #111111;
+            color: #ffffff;
+            border: none;
+            padding: 12px 35px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            text-decoration: none;
+        }
+
+        .btn-hug:hover {
+            background-color: #ff4d6d;
+        }
+
+        .btn-hug:active {
+            transform: scale(0.95);
+        }
+
+        /* Watermark kecil di bagian bawah */
+        .watermark {
+            font-size: 11px;
+            color: #aaaaaa;
+            margin-top: 15px;
+        }
+
+        /* Gaya untuk elemen hati kejutan */
+        .heart-particle {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 2.5s linear forwards;
+            z-index: 5;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 0.8; }
+            100% {
+                transform: translateY(-10vh) translateX(var(--random-x)) scale(var(--random-scale));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Halaman Loading -->
+    <div id="loader-wrapper">
+        <div class="spinner"></div>
+        <div class="loading-text">code by ikhwan</div>
+    </div>
+
+    <!-- Audio Element untuk lagu latar -->
+    <audio id="bgm" loop>
+        <source src="Nahda.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="card" id="main-card">
+        <div class="message-box" id="message-box">
+            <div class="label">To Kamu:</div>
+            <span class="content" id="typing-text"><span class="placeholder-text">Klik tombol "Kejutan & Musik" di bawah dulu yaa... ✨</span></span><span class="cursor" id="cursor">|</span>
+        </div>
+
+        <div class="title">I miss you🤍🤍</div>
+
+        <button class="btn-hug" id="hug-btn">
+            kejutan & musik <span id="heart-icon">♡</span>
+        </button>
+
+        <div class="watermark">code by z101</div>
+    </div>
+
+    <script>
+        // --- Fitur Delay / Loading Screen ---
+        window.addEventListener("load", () => {
+            const loader = document.getElementById("loader-wrapper");
+            const card = document.getElementById("main-card");
+
+            // Delay loading selama 3000 ms (3 detik)
+            setTimeout(() => {
+                loader.classList.add("loader-hidden");
+                card.classList.add("card-show");
+            }, 3000);
+        });
+
+        // --- Logika Pengetikan Surat ---
+        const fullText = "Haii,\n\n" +
+            "Aku cuma mau jujur sama perasaanku. Setelah kita berpisah, aku sadar kalau kamu masih punya arti yang sangat besar buat aku. Rasa sayangku ke kamu ternyata nggak berubah.\n\n" +
+            "Aku minta maaf ya atas semua kesalahan dan kekuranganku dulu. Aku udah banyak belajar dari kejadian kemarin dan pengen banget kita bisa coba lagi dari awal dengan cara yang lebih baik.\n\n" +
+            "Kalau kamu berpikiran yang sama denganku, aku pengen banget kita balikan lagi. Tapi kalau kamu gak mau lagi, aku bakal nerima itu dan hargai keputusan kamu, karna sewajarnya aku yang dulu buat kita sejauh ini. Aku cuma pengen kamu tau kalau aku masih pengen sama kamu. :(";
+
+        let index = 0;
+        const speed = 55;
+        const textContainer = document.getElementById("typing-text");
+        const messageBox = document.getElementById("message-box");
+        const cursor = document.getElementById("cursor");
+        let isStarted = false;
+
+        function typeWriter() {
+            if (index < fullText.length) {
+                textContainer.textContent += fullText.charAt(index);
+                index++;
+                
+                // Otomatis scroll ke bagian bawah kotak pesan saat mengetik
+                messageBox.scrollTop = messageBox.scrollHeight;
+                
+                setTimeout(typeWriter, speed);
+            } else {
+                cursor.style.display = "none";
+            }
+        }
+
+        const hugBtn = document.getElementById("hug-btn");
+        const heartIcon = document.getElementById("heart-icon");
+        const bgm = document.getElementById("bgm");
+
+        hugBtn.addEventListener("click", () => {
+            // Putar musik
+            if (bgm.paused) {
+                bgm.play();
+            }
+
+            // Ubah tampilan tombol
+            heartIcon.innerHTML = "♥";
+            heartIcon.style.color = "#ffffff";
+
+            // Efek hujan hati
+            for (let i = 0; i < 30; i++) {
+                createHeart();
+            }
+
+            // Jalankan pengetikan teks surat jika belum pernah diklik
+            if (!isStarted) {
+                isStarted = true;
+                textContainer.innerHTML = ""; // Bersihkan pesan instruksi awal
+                cursor.style.display = "inline"; // Tampilkan kursor ketik
+                setTimeout(typeWriter, 300);
+            }
+        });
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("heart-particle");
+
+            const heartTypes = ["♥", "💖", "💝", "💕", "♡"];
+            heart.innerHTML = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDelay = Math.random() * 0.5 + "s";
+
+            const randomX = (Math.random() * 200 - 100) + "px";
+            const randomScale = Math.random() * 1.5 + 0.5;
+
+            heart.style.setProperty('--random-x', randomX);
+            heart.style.setProperty('--random-scale', randomScale);
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 2500);
+        }
+    </script>
+
+</body>
+
+</html>

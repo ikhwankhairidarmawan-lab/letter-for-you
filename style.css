@@ -1,0 +1,18 @@
+/* Mengatur latar belakang halaman dengan foto dari laptop */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Ganti 'background.jpg' dengan nama dan format fotomu */
+    background-image: url('foto1.jpg');
+    background-size: cover;
+    /* Membuat foto memenuhi seluruh layar */
+    background-repeat: no-repeat;
+    /* Mencegah foto terulang/batal grid */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #333333;
+    overflow: hidden;
+    position: relative;
+}
